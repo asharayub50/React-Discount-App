@@ -7,6 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
+import Constants from "expo-constants";
 import { useState, useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -14,14 +15,17 @@ import { createStackNavigator } from "@react-navigation/stack";
 const Stack = createStackNavigator();
 
 export default function App() {
-  // return (
-  <NavigationContainer>
-    <Stack.Navigator>
-      <Stack.Screen name="StartScreen" component={} />
-    </Stack.Navigator>
-  </NavigationContainer>;
-  // );
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="StartScreen">
+        <Stack.Screen name="Start" component={StartScreen} />
+        <Stack.Screen name="History" component={History} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
 
+const StartScreen = ({ navigation }) => {
   const [origionalPrice, setorigionalPrice] = useState("");
   const [discountPercentage, setDiscountPercentage] = useState("");
   const [discount, setDiscount] = useState(0);
@@ -49,7 +53,13 @@ export default function App() {
         <Text style={styles.statusBarText}>Discount App</Text>
         <View style={styles.statusBarButton}>
           <View style={{ height: 35 }}>
-            <Button title="History" color="purple" />
+            <Button
+              title="History"
+              color="purple"
+              onPress={() => {
+                navigation.navigate("History");
+              }}
+            />
           </View>
         </View>
       </View>
@@ -97,7 +107,15 @@ export default function App() {
       </View>
     </View>
   );
-}
+};
+
+const History = () => {
+  return (
+    <View>
+      <Text>History</Text>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
