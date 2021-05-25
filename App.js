@@ -11,6 +11,7 @@ import Constants from "expo-constants";
 import { useState, useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
+import { DataTable } from "react-native-paper";
 
 const Stack = createStackNavigator();
 
@@ -18,7 +19,11 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="StartScreen">
-        <Stack.Screen name="Start" component={StartScreen} />
+        <Stack.Screen
+          name="Start"
+          component={StartScreen}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen name="History" component={History} />
       </Stack.Navigator>
     </NavigationContainer>
@@ -31,6 +36,7 @@ const StartScreen = ({ navigation }) => {
   const [discount, setDiscount] = useState(0);
   const [finalPrice, setFinalPrice] = useState(0);
   const [discountHistory, setdiscountHistory] = useState([]);
+  const [count, setCount] = useState(0);
 
   const CalculateDiscount = () => {
     setDiscount((discountPercentage / 100) * origionalPrice);
@@ -39,15 +45,10 @@ const StartScreen = ({ navigation }) => {
 
   const saveCalcultaion = () => {
     let fprice = origionalPrice - (discountPercentage / 100) * origionalPrice;
-    // console.log(origionalPrice);
-    // console.log(discountPercentage);
-    // console.log(fprice);
     var updatedArray = discountHistory;
-    updatedArray.push(
-      `${origionalPrice}     ${discountPercentage}   ${fprice}`
-    );
+    updatedArray.push({ origionalPrice, discountPercentage, fprice, count });
     setdiscountHistory(updatedArray);
-    console.log(discountHistory);
+    setCount(count + 1);
   };
 
   const setterA = (val) => {
@@ -72,7 +73,7 @@ const StartScreen = ({ navigation }) => {
               color="purple"
               onPress={() => {
                 navigation.navigate("History", {
-                  discountHistory: discountHistory,
+                  discountHistory,
                 });
               }}
             />
@@ -131,17 +132,53 @@ const StartScreen = ({ navigation }) => {
   );
 };
 
-const displayHistory = (discHistory) => {
-  const textArray = [];
-  for (let i = 0; i < discHistory.length; i++) {
-    textArray.push(<Text>{discHistory[i]}</Text>);
-  }
-  return textArray;
-};
-
 const History = ({ route }) => {
-  var discHistory = route.params.discountHistory;
-  return <View>{displayHistory(discHistory)}</View>;
+  // var discHistory = route.params.discountHistory;'
+
+  const [discounts, setDiscounts] = useState([]);
+  React.useEffect(() => {
+    if (route.params?.discountHistory) {
+      setDiscounts(route.params?.discountHistory);
+    }
+  }, [route.params?.discountHistory]);
+
+  const remove = (itemKey) => {
+    var list = discounts.filter((item) => item.count != itemKey);
+    setDiscounts(list);
+    // console.log(discounts);
+  };
+
+  return (
+    <View>
+      <DataTable>
+        <DataTable.Header>
+          <DataTable.Title>Origional</DataTable.Title>
+          <DataTable.Title>Discount%</DataTable.Title>
+          <DataTable.Title>Final Price</DataTable.Title>
+          <DataTable.Title>Delete</DataTable.Title>
+        </DataTable.Header>
+
+        {discounts.map((item) => {
+          return (
+            <DataTable.Row>
+              <DataTable.Cell>{item.origionalPrice}</DataTable.Cell>
+              <DataTable.Cell>{item.discountPercentage}</DataTable.Cell>
+              <DataTable.Cell>{item.fprice}</DataTable.Cell>
+              <DataTable.Cell>
+                <Button
+                  title="delete"
+                  color="red"
+                  onPress={() => {
+                    remove(item.count);
+                  }}
+                />
+              </DataTable.Cell>
+            </DataTable.Row>
+          );
+        })}
+      </DataTable>
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
