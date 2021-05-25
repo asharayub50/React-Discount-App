@@ -7,28 +7,42 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
-import Constants from "expo-constants";
 import { useState, useEffect } from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
 
-// You can import from local files
-import AssetExample from "./components/AssetExample";
-
-// or any pure javascript modules available in npm
-import { Card } from "react-native-paper";
+const Stack = createStackNavigator();
 
 export default function App() {
-  const [origionalPrice, setOrigionalPrice] = useState(0);
-  const [discountPercentage, setDiscountPercentage] = useState(0);
-  const [discount, setDiscount, getDiscount] = useState();
-  const [finalPrice, setFinalPrice] = useState();
-  const CalculateDiscount = () => {
-    //  YE WALI LINES HARIS BRO
-    setDiscount((discountPercentage / 100) * origionalPrice);
-    // useEffect(setDiscount((discountPercentage / 100) * origionalPrice));
-    console.log(discount);
+  // return (
+  <NavigationContainer>
+    <Stack.Navigator>
+      <Stack.Screen name="StartScreen" component={} />
+    </Stack.Navigator>
+  </NavigationContainer>;
+  // );
 
-    setFinalPrice(origionalPrice - discount);
+  const [origionalPrice, setorigionalPrice] = useState("");
+  const [discountPercentage, setDiscountPercentage] = useState("");
+  const [discount, setDiscount] = useState(0);
+  const [finalPrice, setFinalPrice] = useState(0);
+
+  const CalculateDiscount = () => {
+    setDiscount((discountPercentage / 100) * origionalPrice);
+    setFinalPrice(origionalPrice - (discountPercentage / 100) * origionalPrice);
   };
+
+  const setterA = (val) => {
+    if (val >= 0) {
+      setorigionalPrice(val);
+    }
+  };
+  const setterB = (val) => {
+    if (val >= 0 && val <= 100) {
+      setDiscountPercentage(val);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -43,9 +57,10 @@ export default function App() {
       <View style={styles.input}>
         <Text>Origional Price: </Text>
         <TextInput
+          keyboardType="numeric"
           style={styles.textInput}
           onChangeText={(val) => {
-            setOrigionalPrice(val);
+            setterA(val);
           }}
         />
       </View>
@@ -53,16 +68,23 @@ export default function App() {
       <View style={styles.input}>
         <Text>Discount Percentage: </Text>
         <TextInput
+          keyboardType="numeric"
           style={styles.textInput}
           onChangeText={(val) => {
-            setDiscountPercentage(val);
+            setterB(val);
           }}
         />
       </View>
 
       <View style={styles.buttonContainer}>
         <View style={styles.button1}>
-          <Button title="Calculate" color="teal" onPress={CalculateDiscount} />
+          <Button
+            title="Calculate"
+            color="teal"
+            onPress={() => {
+              CalculateDiscount();
+            }}
+          />
         </View>
       </View>
 
