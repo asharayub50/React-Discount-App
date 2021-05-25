@@ -30,10 +30,24 @@ const StartScreen = ({ navigation }) => {
   const [discountPercentage, setDiscountPercentage] = useState("");
   const [discount, setDiscount] = useState(0);
   const [finalPrice, setFinalPrice] = useState(0);
+  const [discountHistory, setdiscountHistory] = useState([]);
 
   const CalculateDiscount = () => {
     setDiscount((discountPercentage / 100) * origionalPrice);
     setFinalPrice(origionalPrice - (discountPercentage / 100) * origionalPrice);
+  };
+
+  const saveCalcultaion = () => {
+    let fprice = origionalPrice - (discountPercentage / 100) * origionalPrice;
+    // console.log(origionalPrice);
+    // console.log(discountPercentage);
+    // console.log(fprice);
+    var updatedArray = discountHistory;
+    updatedArray.push(
+      `${origionalPrice}     ${discountPercentage}   ${fprice}`
+    );
+    setdiscountHistory(updatedArray);
+    console.log(discountHistory);
   };
 
   const setterA = (val) => {
@@ -57,7 +71,9 @@ const StartScreen = ({ navigation }) => {
               title="History"
               color="purple"
               onPress={() => {
-                navigation.navigate("History");
+                navigation.navigate("History", {
+                  discountHistory: discountHistory,
+                });
               }}
             />
           </View>
@@ -105,16 +121,27 @@ const StartScreen = ({ navigation }) => {
       <View style={styles.output}>
         <Text>Final Price: {finalPrice}</Text>
       </View>
+
+      <View style={styles.buttonContainer}>
+        <View style={styles.button1}>
+          <Button title="Save" color="teal" onPress={saveCalcultaion} />
+        </View>
+      </View>
     </View>
   );
 };
 
-const History = () => {
-  return (
-    <View>
-      <Text>History</Text>
-    </View>
-  );
+const displayHistory = (discHistory) => {
+  const textArray = [];
+  for (let i = 0; i < discHistory.length; i++) {
+    textArray.push(<Text>{discHistory[i]}</Text>);
+  }
+  return textArray;
+};
+
+const History = ({ route }) => {
+  var discHistory = route.params.discountHistory;
+  return <View>{displayHistory(discHistory)}</View>;
 };
 
 const styles = StyleSheet.create({
