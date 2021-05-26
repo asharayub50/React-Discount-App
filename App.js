@@ -11,14 +11,14 @@ import Constants from "expo-constants";
 import { useState, useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import { DataTable } from "react-native-paper";
+import { DataTable, IconButton } from "react-native-paper";
 
 const Stack = createStackNavigator();
 
-export default function App() {
+export default function App({ navigation }) {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="StartScreen">
+      <Stack.Navigator initialRouteName="Start">
         <Stack.Screen
           name="Start"
           component={StartScreen}
@@ -30,7 +30,15 @@ export default function App() {
   );
 }
 
-const StartScreen = ({ navigation }) => {
+const StartScreen = ({ navigation, route }) => {
+  React.useEffect(() => {
+    if (route.params?.discounts) {
+      // Post updated, do something with `route.params.post`
+      // For example, send the post to the server
+      setdiscountHistory(route.params.discounts);
+    }
+  }, [route.params?.discounts]);
+
   const [origionalPrice, setorigionalPrice] = useState("");
   const [discountPercentage, setDiscountPercentage] = useState("");
   const [discount, setDiscount] = useState(0);
@@ -132,8 +140,21 @@ const StartScreen = ({ navigation }) => {
   );
 };
 
-const History = ({ route }) => {
+const History = ({ navigation, route }) => {
   // var discHistory = route.params.discountHistory;'
+  var emptyArray = [];
+  navigation.setOptions({
+    headerTitleAlign: "center",
+    headerLeft: () => {
+      return (
+        <Button
+          title="Back"
+          color="black"
+          onPress={() => navigation.navigate("Start", { discounts })}
+        />
+      );
+    },
+  });
 
   const [discounts, setDiscounts] = useState([]);
   React.useEffect(() => {
@@ -177,6 +198,11 @@ const History = ({ route }) => {
           );
         })}
       </DataTable>
+      <Button
+        title="Clear All"
+        color="teal"
+        onPress={() => setDiscounts(emptyArray)}
+      />
     </View>
   );
 };
